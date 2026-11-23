@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Travel Desk — Bookings</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Inter+Tight:wght@500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;font-family:'Inter',system-ui,sans-serif;color:#0F1B2D;background:#EEF1F6;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#2453D6}a:hover{color:#163A9E}
+:focus-visible{outline:3px solid rgba(47,107,255,.55);outline-offset:2px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.ic{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* backdrop */
+.root{position:relative;min-height:100vh;overflow:hidden;background:#EEF1F6}
+.blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:.75;animation:float 24s ease-in-out infinite alternate;will-change:transform;pointer-events:none}
+.b1{width:560px;height:560px;left:-140px;top:-160px;background:#B7CBFF}
+.b2{width:480px;height:480px;right:-120px;top:220px;background:#FFD5BE;animation-duration:28s;animation-delay:-6s}
+.b3{width:460px;height:460px;left:34%;bottom:-200px;background:#C4EEDA;animation-duration:32s;animation-delay:-12s}
+
+/* liquid glass */
+.glass{background:radial-gradient(140% 90% at 0% 0%,rgba(255,255,255,.78) 0%,rgba(255,255,255,0) 46%),linear-gradient(180deg,rgba(255,255,255,.58),rgba(255,255,255,.34));backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);border:1px solid rgba(255,255,255,.7);box-shadow:inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.3),0 1px 2px rgba(15,27,45,.04),0 14px 36px -16px rgba(15,27,45,.24)}
+.glass-strong{background:radial-gradient(140% 70% at 0% 0%,rgba(255,255,255,.95) 0%,rgba(255,255,255,0) 50%),linear-gradient(180deg,rgba(255,255,255,.84),rgba(255,255,255,.68));backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);border:1px solid rgba(255,255,255,.85);box-shadow:inset 0 1px 0 #fff,0 30px 80px -24px rgba(15,27,45,.38),0 2px 8px rgba(15,27,45,.06)}
+.lift{transition:transform .45s cubic-bezier(.2,.8,.2,1),box-shadow .45s cubic-bezier(.2,.8,.2,1),background .3s}
+.lift:hover{transform:translateY(-3px);box-shadow:inset 0 1px 0 #fff,0 22px 44px -18px rgba(15,27,45,.3)}
+
+/* motion */
+.rise{animation:rise .8s cubic-bezier(.2,.8,.2,1) backwards}
+.fade{animation:fade .35s ease backwards}
+.pop{animation:pop .5s cubic-bezier(.16,1,.3,1) backwards}
+@keyframes float{0%{transform:translate(0,0) scale(1)}50%{transform:translate(50px,30px) scale(1.08)}100%{transform:translate(-30px,60px) scale(.94)}}
+@keyframes rise{from{opacity:0;transform:translateY(18px);filter:blur(6px)}}
+@keyframes fade{from{opacity:0}}
+@keyframes pop{from{opacity:0;transform:translateY(12px) scale(.94)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(56px) scale(.98);filter:blur(8px)}}
+@keyframes shimmer{to{background-position:-200% 0}}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(14,165,233,.55)}100%{box-shadow:0 0 0 9px rgba(14,165,233,0)}}
+@keyframes pingG{0%{box-shadow:0 0 0 0 rgba(34,197,94,.55)}100%{box-shadow:0 0 0 9px rgba(34,197,94,0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* type */
+.eyebrow{margin:0 0 6px;font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#52607A}
+.h1{margin:0;font-family:'Inter Tight',sans-serif;font-weight:650;font-size:clamp(40px,6vw,64px);letter-spacing:-.035em;line-height:1}
+.lede{margin:12px 0 0;max-width:560px;font-size:16px;line-height:1.55;color:#3A4860}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace}
+.muted-t{color:#52607A;font-size:14px}
+
+/* header */
+.logo{width:40px;height:40px;border-radius:14px;display:inline-flex;align-items:center;justify-content:center;background:#0F1B2D;color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 8px 18px -8px rgba(15,27,45,.6)}
+.live{display:inline-flex;align-items:center;gap:10px;font-size:13px;font-weight:550;color:#334155;padding:0 14px;min-height:40px;border-radius:999px;background:rgba(255,255,255,.55)}
+.live .dot{animation:pingG 2s ease-out infinite}
+
+/* kpis */
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.kpi{border-radius:28px;padding:22px;display:flex;flex-direction:column;gap:6px;min-height:150px}
+.kpi-top{display:flex;align-items:center;justify-content:space-between;font-size:14px;font-weight:550;color:#3A4860}
+.kpi-ic{width:36px;height:36px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,.75);color:#0F1B2D;box-shadow:inset 0 1px 0 #fff,0 4px 12px -6px rgba(15,27,45,.25)}
+.kpi-val{font-family:'Inter Tight',sans-serif;font-weight:650;font-size:38px;letter-spacing:-.03em;font-variant-numeric:tabular-nums;margin-top:auto}
+.kpi-sub{font-size:13px;color:#52607A}
+
+/* toolbar */
+.seg{display:flex;flex-wrap:wrap;gap:4px;padding:4px;border-radius:999px;background:rgba(15,27,45,.05);box-shadow:inset 0 1px 2px rgba(15,27,45,.07)}
+.tab{appearance:none;border:0;background:transparent;font:inherit;font-size:14px;font-weight:550;color:#3A4860;padding:0 14px;min-height:44px;border-radius:999px;display:inline-flex;align-items:center;gap:8px;cursor:pointer;transition:background .4s cubic-bezier(.2,.8,.2,1),color .3s,box-shadow .4s,transform .2s}
+.tab:hover{color:#0F1B2D;background:rgba(255,255,255,.5)}
+.tab:active{transform:scale(.97)}
+.tab.is-on{background:rgba(255,255,255,.95);color:#0F1B2D;box-shadow:inset 0 1px 0 #fff,0 8px 18px -8px rgba(15,27,45,.32)}
+.count{font-size:12px;min-width:22px;height:22px;padding:0 7px;border-radius:999px;background:rgba(15,27,45,.07);display:inline-flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums;transition:background .3s,color .3s}
+.tab.is-on .count{background:#0F1B2D;color:#fff}
+.search{display:flex;align-items:center;gap:8px;padding:0 16px;min-height:44px;border-radius:999px;background:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.85);flex:1 1 240px;max-width:360px;color:#52607A;transition:box-shadow .3s,background .3s}
+.search:focus-within{background:rgba(255,255,255,.95);box-shadow:0 0 0 4px rgba(47,107,255,.18)}
+.search input{border:0;outline:0;background:transparent;font:inherit;font-size:14px;color:#0F1B2D;width:100%;min-height:42px}
+.search input::placeholder{color:#64748B}
+
+/* list */
+.scroll{overflow-x:auto;padding:2px 4px 8px}
+.grid{display:grid;grid-template-columns:76px minmax(200px,2.2fr) minmax(210px,1.6fr) 150px 110px 120px 100px;gap:14px;align-items:center;min-width:1000px}
+.thead{padding:8px 14px 8px 20px;font-size:12px;font-weight:600;color:#52607A;text-transform:uppercase;letter-spacing:.07em}
+.row{border-radius:22px;padding:10px 10px 10px 20px;background:rgba(255,255,255,.52);border:1px solid rgba(255,255,255,.78);box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 6px 18px -14px rgba(15,27,45,.3)}
+.row:hover{background:rgba(255,255,255,.82)}
+.id{font-size:13px;color:#52607A}
+.reqbtn{appearance:none;border:0;background:none;padding:0;font:inherit;font-size:15px;font-weight:600;color:#0F1B2D;text-align:left;cursor:pointer;min-height:44px;transition:color .2s}
+.reqbtn:hover{color:#2453D6}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;font-size:13px;font-weight:600;white-space:nowrap;transition:background .4s,color .4s}
+.dot{width:8px;height:8px;border-radius:50%;flex:none;display:inline-block}
+.ping{animation:ping 1.8s ease-out infinite}
+.stuck{display:inline-flex;align-items:center;gap:6px;margin-left:8px;font-size:12px;font-weight:600;color:#9A3412;background:rgba(251,146,60,.18);padding:5px 10px;border-radius:999px;white-space:nowrap}
+.pay{display:inline-flex;align-items:center;gap:8px;font-size:14px;color:#3A4860;white-space:nowrap}
+.price{text-align:right;font-weight:600;font-variant-numeric:tabular-nums;font-size:15px}
+.acts{display:flex;gap:6px;justify-content:flex-end}
+.iconbtn{width:44px;height:44px;flex:none;border-radius:999px;border:1px solid rgba(255,255,255,.85);background:rgba(255,255,255,.6);display:inline-flex;align-items:center;justify-content:center;color:#334155;cursor:pointer;transition:transform .3s cubic-bezier(.2,.8,.2,1),background .25s,color .25s,box-shadow .3s}
+.iconbtn:hover{background:#fff;transform:scale(1.07);box-shadow:0 8px 18px -10px rgba(15,27,45,.4)}
+.iconbtn:active{transform:scale(.95)}
+.iconbtn.danger:hover{color:#BE123C;background:#FFF1F3}
+.iconbtn.spin:active svg{animation:spin .6s cubic-bezier(.2,.8,.2,1)}
+.empty{padding:56px 20px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px;color:#3A4860}
+
+/* buttons */
+.btn{min-height:48px;padding:0 22px;border-radius:999px;font:inherit;font-weight:600;font-size:15px;cursor:pointer;border:1px solid transparent;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .25s cubic-bezier(.2,.8,.2,1),background .25s,box-shadow .3s}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{transform:scale(.97)}
+.btn-ghost{background:rgba(255,255,255,.75);border-color:rgba(15,27,45,.1);color:#0F1B2D}
+.btn-ghost:hover{background:#fff}
+.btn-danger{background:#E11D48;color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 12px 26px -12px rgba(225,29,72,.7)}
+.btn-danger:hover{background:#BE123C}
+.btn-soft{background:rgba(225,29,72,.08);color:#BE123C;border-color:rgba(225,29,72,.22)}
+.btn-soft:hover{background:rgba(225,29,72,.14)}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+
+/* drawer */
+.scrim{position:fixed;inset:0;border:0;padding:0;margin:0;background:rgba(15,27,45,.2);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:40;cursor:default}
+.drawer{position:fixed;top:16px;right:16px;bottom:16px;width:min(500px,calc(100% - 32px));z-index:50;border-radius:34px;display:flex;flex-direction:column;overflow:hidden;animation:slideIn .65s cubic-bezier(.16,1,.3,1) backwards}
+.drawer-body{overflow-y:auto;padding:22px 24px 20px;display:flex;flex-direction:column;gap:20px;flex:1}
+.drawer-foot{padding:16px 20px 20px;display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;border-top:1px solid rgba(15,27,45,.06);background:rgba(255,255,255,.45)}
+.h2{margin:0;font-family:'Inter Tight',sans-serif;font-weight:650;font-size:30px;letter-spacing:-.025em;line-height:1.1}
+.bigprice{font-family:'Inter Tight',sans-serif;font-weight:650;font-size:34px;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.panel{border-radius:24px;padding:18px;background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.85);box-shadow:inset 0 1px 0 #fff}
+.steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.bar{height:6px;border-radius:999px;background:rgba(15,27,45,.09)}
+.step.done .bar{background:#0F1B2D}
+.step.now .bar{background:linear-gradient(90deg,#2F6BFF,#9DB8FF,#2F6BFF);background-size:200% 100%;animation:shimmer 2.2s linear infinite}
+.lbl{font-size:12px;font-weight:600;color:#64748B;margin-top:8px}
+.step.done .lbl,.step.now .lbl{color:#0F1B2D}
+.callout{border-radius:20px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;font-size:14px;line-height:1.5}
+.c-amber{background:rgba(245,158,11,.15);color:#78350F}
+.c-orange{background:rgba(251,146,60,.16);color:#7C2D12}
+.c-grey{background:rgba(100,116,139,.12);color:#334155}
+details.group{border-radius:22px;background:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.8);padding:2px 16px;transition:background .3s}
+details.group[open]{background:rgba(255,255,255,.7)}
+details.group summary{min-height:48px;display:flex;align-items:center;justify-content:space-between;font-weight:600;font-size:14px;cursor:pointer;list-style:none}
+details.group summary::-webkit-details-marker{display:none}
+.chev{transition:transform .35s cubic-bezier(.2,.8,.2,1);color:#52607A}
+details[open] .chev{transform:rotate(90deg)}
+.kv{display:grid;grid-template-columns:160px minmax(0,1fr);gap:12px;padding:10px 0;border-top:1px solid rgba(15,27,45,.06);font-size:13px}
+.kv-k{font-family:'JetBrains Mono',ui-monospace,monospace;color:#52607A}
+.kv-v{color:#0F1B2D;word-break:break-word}
+.kv-v.muted{color:#64748B}
+
+/* modal + toast */
+.scrim2{position:fixed;inset:0;z-index:60;background:rgba(15,27,45,.3);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.modalwrap{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;padding:20px;pointer-events:none}
+.modal{pointer-events:auto;width:min(440px,100%);border-radius:34px;padding:28px;display:flex;flex-direction:column;gap:16px}
+.warn{width:52px;height:52px;border-radius:18px;display:inline-flex;align-items:center;justify-content:center;background:rgba(225,29,72,.1);color:#BE123C}
+.toastwrap{position:fixed;left:0;right:0;bottom:28px;z-index:80;display:flex;justify-content:center;pointer-events:none;padding:0 16px}
+.toast{pointer-events:auto;display:flex;align-items:center;gap:12px;padding:8px 8px 8px 18px;border-radius:999px;background:rgba(15,27,45,.84);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);color:#fff;font-size:14px;font-weight:500;box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 18px 40px -14px rgba(15,27,45,.6)}
+.undo{appearance:none;border:0;font:inherit;font-weight:600;font-size:14px;color:#0F1B2D;background:#fff;border-radius:999px;padding:0 16px;min-height:40px;cursor:pointer;transition:transform .2s}
+.undo:hover{transform:scale(1.04)}
+
+@media (max-width:960px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:540px){.kpis{grid-template-columns:minmax(0,1fr)}.hdr{border-radius:28px!important}.kv{grid-template-columns:minmax(0,1fr);gap:2px}.drawer{top:8px;right:8px;bottom:8px;width:calc(100% - 16px);border-radius:28px}}
+</style>
+</helmet>
+<div class="root">
+<div class="blob b1" aria-hidden="true"></div>
+<div class="blob b2" aria-hidden="true"></div>
+<div class="blob b3" aria-hidden="true"></div>
+
+<div style="position: relative; z-index: 1; max-width: 1240px; margin: 0 auto; padding: 24px 24px 80px; display: flex; flex-direction: column; gap: 28px">
+
+<header class="glass rise hdr" style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 10px 10px 12px; border-radius: 999px">
+<div style="display: flex; align-items: center; gap: 12px">
+<span class="logo" aria-hidden="true"><svg class="ic" width="20" height="20" viewBox="0 0 24 24"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"></path></svg></span>
+<span style="font-family: 'Inter Tight', sans-serif; font-weight: 650; font-size: 18px; letter-spacing: -0.01em">Travel Desk</span>
+</div>
+<div style="display: flex; align-items: center; gap: 8px">
+<span class="live"><span class="dot" style="background: #22C55E"></span>Live from bookings DB</span>
+<button class="iconbtn spin" aria-label="Refresh bookings"><svg class="ic" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.6-6.4"></path><path d="M21 4v5h-5"></path></svg></button>
+</div>
+</header>
+
+<section class="rise" style="animation-delay: 80ms; display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; padding: 8px 4px 0">
+<div>
+<p class="eyebrow">Friday, 20 November</p>
+<h1 class="h1">Bookings</h1>
+<p class="lede">Every travel request the agent picked up from Slack — where it stands, what’s owed, and what’s stuck.</p>
+</div>
+</section>
+
+<section class="kpis" aria-label="Summary">
+<div class="kpi glass lift rise" style="animation-delay: 140ms">
+<div class="kpi-top">Total requests<span class="kpi-ic" aria-hidden="true"><svg class="ic" width="18" height="18" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"></rect><path d="M8 9h8M8 13h8M8 17h5"></path></svg></span></div>
+<div class="kpi-val">{{ k.total }}</div>
+<div class="kpi-sub">{{ k.totalSub }}</div>
+</div>
+<div class="kpi glass lift rise" style="animation-delay: 200ms">
+<div class="kpi-top">In progress<span class="kpi-ic" aria-hidden="true"><svg class="ic" width="18" height="18" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"></circle><path d="M12 8v4l3 2"></path></svg></span></div>
+<div class="kpi-val">{{ k.active }}</div>
+<div class="kpi-sub">{{ k.activeSub }}</div>
+</div>
+<div class="kpi glass lift rise" style="animation-delay: 260ms">
+<div class="kpi-top">Awaiting payment<span class="kpi-ic" aria-hidden="true"><svg class="ic" width="18" height="18" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="3"></rect><path d="M3 10h18M7 15h3"></path></svg></span></div>
+<div class="kpi-val">{{ k.pay }}</div>
+<div class="kpi-sub">{{ k.paySub }}</div>
+</div>
+<div class="kpi glass lift rise" style="animation-delay: 320ms">
+<div class="kpi-top">Stuck over 24h<span class="kpi-ic" aria-hidden="true" style="color: #C2410C"><svg class="ic" width="18" height="18" viewBox="0 0 24 24"><path d="M12 4 2.8 19.5h18.4z"></path><path d="M12 10v4M12 17h.01"></path></svg></span></div>
+<div class="kpi-val">{{ k.stuck }}</div>
+<div class="kpi-sub">{{ k.stuckSub }}</div>
+</div>
+</section>
+
+<section class="glass rise" style="animation-delay: 380ms; border-radius: 32px; padding: 12px; display: flex; flex-direction: column; gap: 8px" aria-label="Bookings list">
+<div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; padding: 2px">
+<div class="seg" role="group" aria-label="Filter by status">
+<sc-for list="{{ tabs }}" as="t" hint-placeholder-count="5">
+<button class="{{ t.cls }}" aria-pressed="{{ t.pressed }}" onClick="{{ t.pick }}">{{ t.label }}<span class="count">{{ t.count }}</span></button>
+</sc-for>
+</div>
+<div class="search">
+<svg class="ic" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+<label class="sr-only" for="td-q">Search bookings</label>
+<input id="td-q" type="search" placeholder="Search by ID, route or status" value="{{ q }}" onChange="{{ onSearch }}">
+</div>
+</div>
+
+<div class="scroll">
+<div class="grid thead" aria-hidden="true">
+<span>ID</span><span>Request</span><span>Status</span><span>Payment</span><span style="text-align: right">Price</span><span>Created</span><span></span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<sc-for list="{{ rows }}" as="b" hint-placeholder-count="6">
+<div class="row grid lift rise" style="{{ b.rowStyle }}">
+<span class="mono id">{{ b.idLabel }}</span>
+<button class="reqbtn" onClick="{{ b.open }}">{{ b.request }}</button>
+<span style="display: flex; align-items: center; flex-wrap: wrap; gap: 4px">
+<span class="chip" style="{{ b.chipStyle }}"><span class="{{ b.dotCls }}" style="{{ b.dotStyle }}"></span>{{ b.statusLabel }}</span>
+<sc-if value="{{ b.isStuck }}" hint-placeholder-val="{{ false }}"><span class="stuck">{{ b.stuckLabel }}</span></sc-if>
+</span>
+<span class="pay"><span class="dot" style="{{ b.payStyle }}"></span>{{ b.payLabel }}</span>
+<span class="price">{{ b.priceLabel }}</span>
+<span class="muted-t">{{ b.created }}</span>
+<span class="acts">
+<sc-if value="{{ b.canCancel }}" hint-placeholder-val="{{ true }}">
+<button class="iconbtn danger" aria-label="{{ b.cancelLabel }}" onClick="{{ b.ask }}"><svg class="ic" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button>
+</sc-if>
+<button class="iconbtn" aria-label="{{ b.openLabel }}" onClick="{{ b.open }}"><svg class="ic" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg></button>
+</span>
+</div>
+</sc-for>
+</div>
+<sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}">
+<div class="empty fade">
+<span class="kpi-ic" aria-hidden="true"><svg class="ic" width="18" height="18" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg></span>
+<strong style="font-size: 16px; color: #0F1B2D">No bookings here</strong>
+<span class="muted-t">Try another filter or clear the search.</span>
+</div>
+</sc-if>
+</div>
+</section>
+</div>
+
+<sc-if value="{{ hasSel }}" hint-placeholder-val="{{ false }}">
+<button class="scrim fade" aria-label="Close booking details" onClick="{{ closeSel }}"></button>
+<aside class="drawer glass-strong" role="dialog" aria-modal="true" aria-label="{{ sel.aria }}">
+<div class="drawer-body">
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 12px">
+<div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap">
+<span class="mono id" style="font-size: 14px">{{ sel.idLabel }}</span>
+<span class="chip" style="{{ sel.chipStyle }}"><span class="{{ sel.dotCls }}" style="{{ sel.dotStyle }}"></span>{{ sel.statusLabel }}</span>
+</div>
+<button class="iconbtn" aria-label="Close" onClick="{{ closeSel }}"><svg class="ic" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button>
+</div>
+
+<div>
+<h2 class="h2">{{ sel.request }}</h2>
+<p class="muted-t" style="margin: 8px 0 0">{{ sel.createdLine }}</p>
+</div>
+
+<div class="panel" style="display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap">
+<div>
+<div class="muted-t" style="font-size: 13px">Quoted price</div>
+<div class="bigprice">{{ sel.priceLabel }}</div>
+</div>
+<span class="pay" style="padding: 8px 14px; border-radius: 999px; background: rgba(255,255,255,.75)"><span class="dot" style="{{ sel.payStyle }}"></span>{{ sel.payLabel }}</span>
+</div>
+<sc-if value="{{ sel.showSteps }}" hint-placeholder-val="{{ true }}">
+<div class="steps" aria-label="Booking progress">
+<sc-for list="{{ sel.steps }}" as="s" hint-placeholder-count="4">
+<div class="{{ s.cls }}"><div class="bar"></div><div class="lbl">{{ s.label }}</div></div>
+</sc-for>
+</div>
+</sc-if>
+</div>
+
+<sc-if value="{{ sel.isAwaiting }}" hint-placeholder-val="{{ false }}">
+<div class="callout c-amber"><svg class="ic" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" style="flex: none; margin-top: 2px"><rect x="3" y="6" width="18" height="13" rx="3"></rect><path d="M3 10h18"></path></svg><span>{{ sel.awaitText }}</span></div>
+</sc-if>
+<sc-if value="{{ sel.isStuck }}" hint-placeholder-val="{{ false }}">
+<div class="callout c-orange"><svg class="ic" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" style="flex: none; margin-top: 2px"><path d="M12 4 2.8 19.5h18.4z"></path><path d="M12 10v4M12 17h.01"></path></svg><span>{{ sel.stuckText }}</span></div>
+</sc-if>
+<sc-if value="{{ sel.closed }}" hint-placeholder-val="{{ false }}">
+<div class="callout c-grey"><svg class="ic" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" style="flex: none; margin-top: 2px"><circle cx="12" cy="12" r="8"></circle><path d="M12 8v5M12 16h.01"></path></svg><span>{{ sel.closedText }}</span></div>
+</sc-if>
+
+<div style="display: flex; flex-direction: column; gap: 10px">
+<sc-for list="{{ sel.groups }}" as="g" hint-placeholder-count="6">
+<details class="group" open="{{ g.open }}">
+<summary><span>{{ g.title }}</span><svg class="ic chev" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg></summary>
+<div style="padding-bottom: 6px">
+<sc-for list="{{ g.rows }}" as="r" hint-placeholder-count="4">
+<div class="kv"><span class="kv-k">{{ r.key }}</span><span class="{{ r.cls }}">{{ r.val }}</span></div>
+</sc-for>
+</div>
+</details>
+</sc-for>
+</div>
+</div>
+<div class="drawer-foot">
+<button class="btn btn-ghost" onClick="{{ closeSel }}">Close</button>
+<button class="btn btn-soft" onClick="{{ askSel }}" disabled="{{ sel.noCancel }}"><svg class="ic" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg>Cancel booking</button>
+</div>
+</aside>
+</sc-if>
+
+<sc-if value="{{ hasConfirm }}" hint-placeholder-val="{{ false }}">
+<div class="scrim2 fade" aria-hidden="true"></div>
+<div class="modalwrap">
+<div class="modal glass-strong pop" role="alertdialog" aria-modal="true" aria-labelledby="td-cx-t" aria-describedby="td-cx-d">
+<span class="warn" aria-hidden="true"><svg class="ic" width="22" height="22" viewBox="0 0 24 24"><path d="M12 4 2.8 19.5h18.4z"></path><path d="M12 10v4M12 17h.01"></path></svg></span>
+<h3 id="td-cx-t" class="h2" style="font-size: 24px">{{ cx.title }}</h3>
+<p id="td-cx-d" style="margin: 0; font-size: 15px; line-height: 1.55; color: #3A4860">Its status changes to cancelled and it moves to Closed. You can undo for a few seconds after.</p>
+<div class="panel" style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 16px">
+<span style="font-weight: 600">{{ cx.request }}</span>
+<span style="font-weight: 600; font-variant-numeric: tabular-nums">{{ cx.price }}</span>
+</div>
+<div style="display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; margin-top: 4px">
+<button class="btn btn-ghost" onClick="{{ keep }}">Keep booking</button>
+<button class="btn btn-danger" onClick="{{ doCancel }}">Cancel booking</button>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+<div class="toastwrap">
+<div class="toast pop" role="status">
+<svg class="ic" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4.5 4.5L19 7"></path></svg>
+<span>{{ toast }}</span>
+<button class="undo" onClick="{{ undo }}">Undo</button>
+</div>
+</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1200}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { tab: 'all', q: '', selId: null, confirmId: null, over: {}, toast: null, lastId: null, p: 0 };
+    this.timer = null;
+    this.raf = null;
+  }
+  componentDidMount() {
+    var reduce = false;
+    try { reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+    if (reduce) { this.setState({ p: 1 }); return; }
+    var start = null, self = this;
+    var tick = function (t) {
+      if (start === null) start = t;
+      var x = Math.min(1, (t - start) / 1100);
+      self.setState({ p: 1 - Math.pow(1 - x, 3) });
+      if (x < 1) self.raf = requestAnimationFrame(tick);
+    };
+    setTimeout(function () { self.raf = requestAnimationFrame(tick); }, 250);
+  }
+  componentWillUnmount() {
+    if (this.timer) clearTimeout(this.timer);
+    if (this.raf) cancelAnimationFrame(this.raf);
+  }
+  renderVals() {
+    var self = this;
+    var st = this.state;
+    var BASE = [
+      { id: 35, created: 'Nov 20, 10:40', createdAt: '2026-11-20 10:40', request: '2 tickets Delhi → Baku', status: 'awaiting_payment', price: 58238, payment: 'awaiting_payment', bookingRef: 'dev_c77c…_3ds', payUrl: 'Pay link sent' },
+      { id: 33, created: 'Nov 20, 10:05', createdAt: '2026-11-20 10:05', request: '2 tickets Delhi → Baku', status: 'need_info', price: null, payment: 'unpaid' },
+      { id: 30, created: 'Nov 18, 16:56', createdAt: '2026-11-18 16:56', request: 'DEL → BOM Sunday', status: 'searching', price: null, payment: 'unpaid', stuck: '2 days' },
+      { id: 27, created: 'Nov 18, 12:11', createdAt: '2026-11-18 12:11', request: 'DEL → BOM Sunday', status: 'need_documents', price: 11268, payment: 'unpaid' },
+      { id: 26, created: 'Nov 18', createdAt: '2026-11-18', request: 'DEL → BOM Sunday', status: 'replaced', price: 11226, payment: 'unpaid' },
+      { id: 25, created: 'Nov 18', createdAt: '2026-11-18', request: 'DEL → BOM Sunday', status: 'replaced', price: 10428, payment: 'unpaid' },
+      { id: 23, created: 'Nov 18', createdAt: '2026-11-18', request: 'DEL → BOM', status: 'need_info', price: 10428, payment: 'unpaid' },
+      { id: 22, created: 'Nov 17', createdAt: '2026-11-17', request: 'DEL → BOM', status: 'need_info', price: 8176, payment: 'unpaid' }
+    ];
+    var S = {
+      searching:        { label: 'Searching',        fg: '#0B5C73', bg: 'rgba(56,189,248,.18)',  dot: '#0EA5E9', group: 'active', step: 0 },
+      need_info:        { label: 'Needs info',       fg: '#1E40AF', bg: 'rgba(59,130,246,.15)',  dot: '#3B82F6', group: 'active', step: 1 },
+      need_documents:   { label: 'Needs documents',  fg: '#5B21B6', bg: 'rgba(139,92,246,.15)',  dot: '#8B5CF6', group: 'active', step: 1 },
+      awaiting_payment: { label: 'Awaiting payment', fg: '#854D0E', bg: 'rgba(245,158,11,.2)',   dot: '#F59E0B', group: 'active', step: 2 },
+      booked:           { label: 'Booked',           fg: '#166534', bg: 'rgba(34,197,94,.16)',   dot: '#22C55E', group: 'done',   step: 3 },
+      replaced:         { label: 'Replaced',         fg: '#475569', bg: 'rgba(100,116,139,.14)', dot: '#94A3B8', group: 'closed', step: null },
+      cancelled:        { label: 'Cancelled',        fg: '#9F1239', bg: 'rgba(244,63,94,.13)',   dot: '#F43F5E', group: 'closed', step: null }
+    };
+    var PAY = {
+      unpaid:           { label: 'Unpaid',           dot: '#94A3B8' },
+      awaiting_payment: { label: 'Awaiting payment', dot: '#F59E0B' },
+      paid:             { label: 'Paid',             dot: '#22C55E' },
+      failed:           { label: 'Failed',           dot: '#F43F5E' }
+    };
+    var fmt = function (n) { return n == null ? '—' : '₹' + Math.round(n).toLocaleString('en-IN'); };
+    var all = BASE.map(function (b) { var o = Object.assign({}, b); o.status = st.over[b.id] || b.status; return o; });
+    var isActive = function (s) { return S[s].group === 'active'; };
+    var canCancelS = function (s) { return isActive(s) || s === 'booked'; };
+
+    var counts = {
+      all: all.length,
+      active: all.filter(function (b) { return isActive(b.status); }).length,
+      payment: all.filter(function (b) { return b.status === 'awaiting_payment'; }).length,
+      done: all.filter(function (b) { return b.status === 'booked'; }).length,
+      closed: all.filter(function (b) { return S[b.status].group === 'closed'; }).length
+    };
+    var tabs = [['all', 'All'], ['active', 'In progress'], ['payment', 'Awaiting payment'], ['done', 'Booked'], ['closed', 'Closed']].map(function (d) {
+      var on = st.tab === d[0];
+      return { label: d[1], count: counts[d[0]], cls: on ? 'tab is-on' : 'tab', pressed: on ? 'true' : 'false', pick: function () { self.setState({ tab: d[0] }); } };
+    });
+
+    var q = (st.q || '').trim().toLowerCase();
+    var inTab = function (b) {
+      if (st.tab === 'active') return isActive(b.status);
+      if (st.tab === 'payment') return b.status === 'awaiting_payment';
+      if (st.tab === 'done') return b.status === 'booked';
+      if (st.tab === 'closed') return S[b.status].group === 'closed';
+      return true;
+    };
+    var rows = all.filter(inTab).filter(function (b) {
+      return !q || String(b.id).indexOf(q.replace('#', '')) > -1 || b.request.toLowerCase().indexOf(q) > -1 || S[b.status].label.toLowerCase().indexOf(q) > -1 || b.status.indexOf(q) > -1;
+    }).map(function (b, i) {
+      var m = S[b.status], pm = PAY[b.payment];
+      return {
+        id: b.id, request: b.request, created: b.created,
+        idLabel: '#' + b.id, priceLabel: fmt(b.price),
+        statusLabel: m.label, chipStyle: 'color:' + m.fg + ';background:' + m.bg,
+        dotStyle: 'background:' + m.dot, dotCls: b.status === 'searching' ? 'dot ping' : 'dot',
+        isStuck: !!b.stuck && b.status === 'searching', stuckLabel: 'Stuck ' + (b.stuck || ''),
+        payLabel: pm.label, payStyle: 'background:' + pm.dot,
+        canCancel: canCancelS(b.status),
+        rowStyle: 'animation-delay:' + (460 + i * 60) + 'ms',
+        openLabel: 'Open booking ' + b.id, cancelLabel: 'Cancel booking ' + b.id,
+        open: function () { self.setState({ selId: b.id }); },
+        ask: function () { self.setState({ confirmId: b.id }); }
+      };
+    });
+
+    var p = st.p;
+    var awaiting = all.filter(function (b) { return b.status === 'awaiting_payment'; });
+    var awaitSum = awaiting.reduce(function (s, b) { return s + (b.price || 0); }, 0);
+    var waitingOn = all.filter(function (b) { return b.status === 'need_info' || b.status === 'need_documents'; }).length;
+    var stuck = all.filter(function (b) { return b.status === 'searching' && b.stuck; });
+    var k = {
+      total: Math.round(counts.all * p),
+      totalSub: counts.closed + ' closed · ' + counts.done + ' booked',
+      active: Math.round(counts.active * p),
+      activeSub: waitingOn + ' waiting on the traveller',
+      pay: fmt(awaitSum * p),
+      paySub: awaiting.length === 0 ? 'Nothing outstanding' : awaiting.length + (awaiting.length === 1 ? ' booking' : ' bookings') + ' · pay link sent',
+      stuck: Math.round(stuck.length * p),
+      stuckSub: stuck.length ? stuck.map(function (b) { return '#' + b.id; }).join(', ') + ' still searching since Nov 18' : 'Nothing stuck right now'
+    };
+
+    var sb = null;
+    for (var i = 0; i < all.length; i++) if (all[i].id === st.selId) sb = all[i];
+    var sel = { groups: [], steps: [] };
+    if (sb) {
+      var m = S[sb.status], pm = PAY[sb.payment];
+      var V = function (x) { return (x == null || x === '') ? { val: '—', cls: 'kv-v muted' } : { val: String(x), cls: 'kv-v' }; };
+      var G = [
+        ['Core', true, [['id', sb.id], ['created_at', sb.createdAt], ['slack_user', null], ['request', sb.request], ['status', sb.status], ['request_key', null], ['provider', null]]],
+        ['Result', true, [['booking_ref', sb.bookingRef], ['pnr', null], ['price', sb.price != null ? sb.price.toLocaleString('en-IN') : null], ['currency', sb.price != null ? 'INR' : null], ['details', null], ['charged_amount', null]]],
+        ['Payment', false, [['payment_status', sb.payment]]],
+        ['Pay-by-link', sb.status === 'awaiting_payment', [['pay_url', sb.payUrl], ['declined_booking_ref', null], ['pay_started_at', null], ['pay_expires_at', null], ['pay_reminded_at', null], ['pay_approvers', null]]],
+        ['Confirmation', false, [['approver', null], ['approval_ts', null], ['manager_message_ts', null], ['manager_channel', null]]],
+        ['Threading', false, [['slack_thread_ts', null]]]
+      ];
+      var cur = m.step;
+      sel = {
+        aria: 'Booking ' + sb.id + ' details',
+        idLabel: '#' + sb.id, request: sb.request, createdLine: 'Created ' + sb.created,
+        statusLabel: m.label, chipStyle: 'color:' + m.fg + ';background:' + m.bg,
+        dotStyle: 'background:' + m.dot, dotCls: sb.status === 'searching' ? 'dot ping' : 'dot',
+        priceLabel: fmt(sb.price), payLabel: pm.label, payStyle: 'background:' + pm.dot,
+        showSteps: cur != null,
+        steps: ['Searching', 'Info & documents', 'Payment', 'Booked'].map(function (n, j) {
+          return { label: n, cls: cur == null ? 'step' : (j < cur ? 'step done' : (j === cur ? 'step now' : 'step')) };
+        }),
+        isAwaiting: sb.status === 'awaiting_payment',
+        awaitText: 'Pay link sent to the traveller for ' + fmt(sb.price) + '. The booking completes once payment lands and a PNR comes back.',
+        isStuck: sb.status === 'searching' && !!sb.stuck,
+        stuckText: 'Still searching after ' + (sb.stuck || '') + '. Consider cancelling and asking the traveller to send a fresh request.',
+        closed: S[sb.status].group === 'closed',
+        closedText: sb.status === 'replaced' ? 'Replaced by a newer request for the same trip. Kept for the record.' : 'Cancelled from the dashboard. The agent won’t work on this request any more.',
+        noCancel: !canCancelS(sb.status),
+        groups: G.map(function (g) { return { title: g[0], open: g[1], rows: g[2].map(function (r) { var v = V(r[1]); return { key: r[0], val: v.val, cls: v.cls }; }) }; })
+      };
+    }
+
+    var cb = null;
+    for (var j = 0; j < all.length; j++) if (all[j].id === st.confirmId) cb = all[j];
+    var cx = cb ? { title: 'Cancel booking #' + cb.id + '?', request: cb.request, price: fmt(cb.price) } : { title: '', request: '', price: '' };
+
+    return {
+      k: k, tabs: tabs, rows: rows, q: st.q, isEmpty: rows.length === 0,
+      onSearch: function (e) { self.setState({ q: e.target.value }); },
+      hasSel: !!sb, sel: sel,
+      closeSel: function () { self.setState({ selId: null }); },
+      askSel: function () { self.setState({ confirmId: st.selId }); },
+      hasConfirm: !!cb, cx: cx,
+      keep: function () { self.setState({ confirmId: null }); },
+      doCancel: function () {
+        var id = st.confirmId;
+        var over = Object.assign({}, st.over); over[id] = 'cancelled';
+        self.setState({ over: over, confirmId: null, toast: 'Booking #' + id + ' cancelled', lastId: id });
+        if (self.timer) clearTimeout(self.timer);
+        self.timer = setTimeout(function () { self.setState({ toast: null }); }, 4500);
+      },
+      hasToast: !!st.toast, toast: st.toast,
+      undo: function () {
+        var over = Object.assign({}, st.over); delete over[st.lastId];
+        if (self.timer) clearTimeout(self.timer);
+        self.setState({ over: over, toast: null, lastId: null });
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>
