@@ -1,12 +1,12 @@
 import { defineConfig, type Plugin, type ProxyOptions } from 'vite';
 import react from '@vitejs/plugin-react';
-import { bookingsApi } from './server/api';
+import { bookingsApi, gstApi } from './server/api';
 
 // Dashboard API: reads/writes the bot's SQLite DB directly (server/api.ts).
 const api: Plugin = {
   name: 'traveldesk-api',
-  configureServer(server) { server.middlewares.use(bookingsApi); },
-  configurePreviewServer(server) { server.middlewares.use(bookingsApi); },
+  configureServer(server) { server.middlewares.use(bookingsApi); server.middlewares.use(gstApi); },
+  configurePreviewServer(server) { server.middlewares.use(bookingsApi); server.middlewares.use(gstApi); },
 };
 
 // /book: the bot's web booking service (python -m traveldesk.web).

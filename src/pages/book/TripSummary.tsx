@@ -64,7 +64,7 @@ function NextAction({ user, sent, actionError, ...confirm }: ConfirmProps & { us
       {actionError && <p className="bk-err" role="alert">{actionError}</p>}
       {sent.status === 'awaiting_confirm' && (
         <>
-          <ConfirmHere {...confirm} />
+          <Confirm Here {...confirm} />
           {!confirm.needs && <p className="bk-fine" style={{ margin: 0 }}>Or press Confirm on the Slack card. Either one books it.</p>}
         </>
       )}

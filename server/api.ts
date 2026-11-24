@@ -147,3 +147,31 @@ export const bookingsApi: Connect.NextHandleFunction = (req, res, next) => {
     return send(res, 500, { error: (e as Error).message });
   }
 };
+
+// GST page: ops_bookings that have a GST breakdown (traveldesk-bot ops/gst.py; amounts in paise).
+// Same "money spent" statuses as the bot's `/traveldesk gst` summary (ops/gst_report.py SPENT).
+const GST_SQL = `
+  SELECT b.id, b.created_at, b.route, b.pnr, b.status, b.fare_paise, b.category, b.taxable_value_paise,
+         CAST(b.gst_rate AS TEXT) AS gst_rate, b.cgst_paise, b.sgst_paise, b.igst_paise, b.total_gst_paise,
+         b.computed_gst_paise, b.gst_mismatch, b.supplier_gstin, b.supplier_state, b.invoice_no,
+         b.invoice_date, b.invoice_url, b.itc_eligible, b.itc_status, r.legacy_booking_id,
+         COALESCE(t.name, r.slack_user) AS employee
+  FROM ops_bookings b
+  JOIN ops_requests r ON r.id = b.request_id
+  LEFT JOIN ops_travelers t ON t.id = b.traveler_id
+  WHERE b.total_gst_paise IS NOT NULL AND b.status IN ('ticketed', 'held', 'refund_pending')
+  ORDER BY b.created_at DESC, b.id DESC`;
+
+export const gstApi: Connect.NextHandleFunction = (req, res, next) => {
+  const url = new URL(req.url || '/', 'http://x');
+  if (url.pathname !== '/api/gst') return next();
+  if (req.method !== 'GET') return send(res, 405, { error: 'Method not allowed' });
+  try {
+    return send(res, 200, { rows: conn().prepare(GST_SQL).all() });
+  } catch (e) {
+    const msg = (e as Error).message;
+    // ops tables missing, or GST columns not migrated yet (alembic upgrade head in traveldesk-bot)
+    if (/no such (table|column)/.test(msg)) return send(res, 200, { rows: [], setup: msg });
+    return send(res, 500, { error: msg });
+  }
+};

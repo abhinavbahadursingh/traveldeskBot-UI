@@ -224,3 +224,14 @@ details[open] .chev{transform:rotate(90deg)}
 @media (max-width:960px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:560px){:where(.page-book) .hdr{border-radius:28px!important}.ask{border-radius:28px;flex-wrap:wrap;padding:12px}.ask .btn{width:100%}}
 @media (max-width:540px){.kpis{grid-template-columns:minmax(0,1fr)}:where(.page-dash) .hdr{border-radius:28px!important}.kv{grid-template-columns:minmax(0,1fr);gap:2px}.drawer{top:8px;right:8px;bottom:8px;width:calc(100% - 16px);border-radius:28px}}
+
+/* route transitions */
+.route-progress{position:fixed;top:0;left:0;height:3px;z-index:9999;pointer-events:none;
+  background:linear-gradient(90deg,#2F6BFF,#7AA2FF,#2F6BFF);background-size:200% 100%;
+  box-shadow:0 0 10px rgba(47,107,255,.55);border-radius:0 3px 3px 0;
+  animation:routeBar .7s cubic-bezier(.2,.8,.2,1) forwards,shimmer 1s linear infinite}
+@keyframes routeBar{0%{width:0;opacity:1}60%{width:80%;opacity:1}85%{width:100%;opacity:1}100%{width:100%;opacity:0}}
+/* opacity only: transform/filter here would break position:fixed inside pages */
+.route-enter{animation:fade .35s ease backwards}
+.page-loader{min-height:100vh;display:grid;place-items:center;background:#EEF1F6}
+.page-loader-spinner{width:34px;height:34px;border-radius:50%;border:3px solid rgba(47,107,255,.18);border-top-color:#2F6BFF;animation:spin .8s linear infinite}

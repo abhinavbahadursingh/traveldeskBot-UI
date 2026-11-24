@@ -1,11 +1,11 @@
-import type { ReactNode } from 'react';
+import { useLayoutEffect, useRef, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import type { Traveller } from '../../services/book';
 import { Icon } from '../../components/ui/Icon';
 import { initials } from './people';
 
 interface Props {
-  active: 'book' | 'bookings';
+  active: 'book' | 'bookings' | 'gst';
   travellers?: Traveller[];
   user?: string;
   onUser?: (id: string) => void;
@@ -13,16 +13,40 @@ interface Props {
   right?: ReactNode; // replaces the traveller picker (the bookings page shows live status instead)
 }
 
+/** Where the active-tab pill was last drawn, so the next page's nav can slide it across. */
+let lastPill: { left: number; width: number } | null = null;
+
 /** Sticky glass nav shared by Book a trip and All bookings. Travellers / Policy / notifications are left out: those pages and feeds don't exist yet. */
 export function BookNav({ active, travellers = [], user = '', onUser, waiting = null, right }: Props) {
   const me = travellers.find((t) => t.id === user);
+  const tabsRef = useRef<HTMLDivElement>(null);
+  const pillRef = useRef<HTMLSpanElement>(null);
+
+  // Slide the active-tab pill from where it sat on the previous page to the current tab.
+  useLayoutEffect(() => {
+    const on = tabsRef.current?.querySelector<HTMLElement>('a.on');
+    const pill = pillRef.current;
+    if (!on || !pill) return;
+    const to = { left: on.offsetLeft, width: on.offsetWidth };
+    const from = lastPill ?? to;
+    pill.style.transition = 'none';
+    pill.style.transform = `translateX(${from.left}px)`;
+    pill.style.width = from.width + 'px';
+    void pill.offsetWidth; // commit the start position before transitioning
+    pill.style.transition = '';
+    pill.style.transform = `translateX(${to.left}px)`;
+    pill.style.width = to.width + 'px';
+    lastPill = to;
+  }, [active, waiting]);
+
   return (
     <nav className="bk-nav" aria-label="Primary">
       <div className="bk-brand">
         <span className="bk-logo" aria-hidden="true"><Icon name="plane" size={18} style={{ strokeWidth: 2 }} /></span>
         Travel Desk
       </div>
-      <div className="bk-tabs">
+      <div className="bk-tabs" ref={tabsRef}>
+        <span className="bk-tab-pill" ref={pillRef} aria-hidden="true" />
         {active === 'book'
           ? <a className="on" href="#top" aria-current="page">Book a trip</a>
           : <Link to="/book">Book a trip</Link>}
@@ -34,6 +58,9 @@ export function BookNav({ active, travellers = [], user = '', onUser, waiting = 
               {!!waiting && <span className="bk-count" aria-label={waiting + ' waiting on you'}>{waiting}</span>}
             </Link>
           )}
+        {active === 'gst'
+          ? <a className="on" href="#top" aria-current="page">GST</a>
+          : <Link to="/gst">GST</Link>}
       </div>
       <div className="bk-nav-right">
         {right ?? (
